@@ -5,14 +5,14 @@ import numpy as np
 
 RATE, FPS, DURATION = 48000, 60, 9
 CUTS = [
-    (0, 'tomato'), (24, 'lemon'), (45, 'avocado'), (63, 'strawberry'),
-    (78, 'shiitake'), (91, 'orange'), (103, 'broccoli'), (114, 'cherry'),
-    (124, 'garlic'), (134, 'red-cabbage'), (144, 'mango'), (154, 'ginger'),
-    (164, 'egg'), (173, 'basil'), (182, 'cheese'), (191, 'pear'),
-    (200, 'salmon'), (209, 'passion-fruit'), (218, 'tofu'),
-    (227, 'coconut'), (236, 'bok-choy'), (245, 'radish'), (254, 'lemon'),
+    (0, 'tomato'), (10, 'lemon'), (20, 'avocado'), (30, 'strawberry'),
+    (40, 'shiitake'), (50, 'orange'), (59, 'broccoli'), (68, 'cherry'),
+    (77, 'garlic'), (86, 'red-cabbage'), (95, 'mango'), (104, 'ginger'),
+    (113, 'egg'), (122, 'basil'), (131, 'cheese'), (140, 'pear'),
+    (149, 'salmon'), (158, 'passion-fruit'), (167, 'tofu'),
+    (176, 'coconut'), (185, 'bok-choy'), (194, 'radish'), (203, 'lemon'),
 ]
-ZOOM_START, ZOOM_END, END_CARD = 264/FPS, 372/FPS, 426/FPS
+ZOOM_START, ZOOM_END, END_CARD = 185/FPS, 372/FPS, 426/FPS
 
 
 def compose(destination):

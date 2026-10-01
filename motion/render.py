@@ -37,19 +37,12 @@ def lerp(a,b,t):
 
 
 def travel(t):
-    """Existing strong on-screen movement curve: cubic-bezier(.77,0,.175,1)."""
+    """easeInOutSine: https://easings.net/#easeInOutSine.
+
+    A smooth camera acceleration, instead of a steep UI transition curve.
+    """
     t=clamp(t)
-    if t in [0,1]:
-        return t
-    lo,hi=0.,1.
-    for _ in range(16):
-        u=(lo+hi)/2
-        x=3*(1-u)**2*u*.77+3*(1-u)*u*u*.175+u**3
-        if x<t:
-            lo=u
-        else:
-            hi=u
-    return 3*(1-u)*u*u+u**3
+    return (1-math.cos(math.pi*t))/2
 
 
 def color(value):
@@ -107,22 +100,34 @@ def food(c,id,cx,cy,size,large=False):
 
 
 # Every ingredient appears once; the array matches the portrait frame.
-COLS,ROWS,CELL=20,26,100
+COLS,ROWS,CELL=20,26,120
 grid_ids=[item['id'] for item in CATALOG]
 random.Random(520).shuffle(grid_ids)
 FOCUS=12*COLS+9
 other=grid_ids.index('lemon')
 grid_ids[other],grid_ids[FOCUS]=grid_ids[FOCUS],grid_ids[other]
 assert len(grid_ids)==len(set(grid_ids))==COLS*ROWS==520
-FOCUS_X,FOCUS_Y=950,1250
+FOCUS_COL,FOCUS_ROW=FOCUS%COLS,FOCUS//COLS
+FOCUS_X,FOCUS_Y=(FOCUS_COL+.5)*CELL,(FOCUS_ROW+.5)*CELL
 HERO_SIZE=740
-FINAL_ZOOM=.47
+FINAL_ZOOM=940/(COLS*CELL)
+
+
+def camera(t):
+    progress=travel((t-ZOOM_START)/(ZOOM_END-ZOOM_START))
+    zoom=math.exp(lerp(math.log(HERO_SIZE/80),math.log(FINAL_ZOOM),progress))
+    fx=lerp(FOCUS_X,COLS*CELL/2,progress)
+    fy=lerp(FOCUS_Y,ROWS*CELL/2,progress)
+    return zoom,fx,fy
+
+
+def current_ingredient(t):
+    index=max(0,bisect_right(CUT_TIMES,t+1e-7)-1)
+    return CUTS[index][1]
 
 
 def grid(c,t):
-    progress=travel((t-ZOOM_START)/(ZOOM_END-ZOOM_START))
-    zoom=math.exp(lerp(math.log(HERO_SIZE/80),math.log(FINAL_ZOOM),progress))
-    fx,fy=lerp(FOCUS_X,1000,progress),lerp(FOCUS_Y,1300,progress)
+    zoom,fx,fy=camera(t)
     c.save()
     c.translate(W/2,H/2)
     c.scale(zoom,zoom)
@@ -130,18 +135,22 @@ def grid(c,t):
     left,right=fx-W/(2*zoom)-90,fx+W/(2*zoom)+90
     top,bottom=fy-H/(2*zoom)-90,fy+H/(2*zoom)+90
     for i,id in enumerate(grid_ids):
-        cx,cy=(i%COLS)*CELL+50,(i//COLS)*CELL+50
+        col,row=i%COLS,i//COLS
+        cx,cy=(col+.5)*CELL,(row+.5)*CELL
         if left<cx<right and top<cy<bottom:
-            # Keep the same original-resolution lemon throughout the handoff.
-            food(c,id,cx,cy,80,large=(i==FOCUS))
+            # The final cuts happen inside the already-moving camera.
+            if i==FOCUS:
+                id=current_ingredient(t)
+            # Nearby ingredients retain original-resolution artwork as they enter.
+            large=abs(col-FOCUS_COL)<=1 and abs(row-FOCUS_ROW)<=1
+            food(c,id,cx,cy,80,large=large)
     c.restore()
 
 
 def scene(c,t):
     c.clear(color(BG))
     if t<ZOOM_START:
-        index=max(0,bisect_right(CUT_TIMES,t+1e-7)-1)
-        food(c,CUTS[index][1],W/2,H/2,HERO_SIZE,large=True)
+        food(c,current_ingredient(t),W/2,H/2,HERO_SIZE,large=True)
     elif t<END_CARD:
         grid(c,t)
     else:
@@ -161,11 +170,11 @@ def still(t,path,width=1080):
 
 
 def storyboard():
-    times=[0,.55,1.15,2.6,4.23,4.75,5.25,6.50,8.0]
+    times=[0,.18,.35,ZOOM_START,3.45,4.10,4.8,6.50,8.0]
     board=PILImage.new('RGB',(1080,3*496),'#eaeaea')
     draw=ImageDraw.Draw(board)
     for i,t in enumerate(times):
-        path=OUT/f'v2-frame-{t:.2f}.png'
+        path=OUT/f'v3-frame-{t:.2f}.png'
         still(t,path,360)
         x,y=(i%3)*360,(i//3)*496
         with PILImage.open(path) as frame:
@@ -215,7 +224,7 @@ def render(draft=False):
         code=process.wait()
         if code:
             raise RuntimeError(f'Encoder exited {code}; see {log.name}')
-    report.update({'revision':2,'path':str(path),'width':width,'height':height,'fps':fps,
+    report.update({'revision':3,'path':str(path),'width':width,'height':height,'fps':fps,
                    'frames':fps*SECONDS,'bytes':path.stat().st_size,'unique_grid_images':520,
                    'render_seconds':round(time.perf_counter()-start,2)})
     (OUT/('draft-report.json' if draft else 'render-report.json')).write_text(json.dumps(report,indent=2))
