@@ -1,0 +1,14 @@
+{
+  "name": "Soft Studio Ingredients",
+  "version": "1.0.0",
+  "author": "Alex Wang",
+  "github": "https://github.com/alextyhwang/soft-studio-ingredients",
+  "site": "https://soft-studio-ingredients.vercel.app",
+  "license": "CC-BY-4.0",
+  "licenseName": "CC BY 4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+  "licenseSummary": "Use and adapt the collection, including in commercial projects. Credit Soft Studio Ingredients by Alex Wang, link the license, and note any changes.",
+  "releaseBase": "https://github.com/alextyhwang/soft-studio-ingredients/releases/download/v1.0.0",
+  "webpArchive": "soft-studio-ingredients-webp-v1.0.0.zip",
+  "pngArchive": "soft-studio-ingredients-png-v1.0.0.zip"
+}

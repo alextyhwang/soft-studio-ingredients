@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.release/
+.checks/
+.vercel/
+*.log
+.env
+.env.*

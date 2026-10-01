@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en" data-backdrop="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <meta name="theme-color" content="#f5f5f2" />
+    <meta
+      name="description"
+      content="520 transparent ingredient illustrations for recipe apps, menus, and meal planners. Browse the collection and download WebP, original PNG, and CSV/JSON metadata."
+    />
+    <title>Soft Studio — 520 transparent ingredient illustrations</title>
+    <link rel="canonical" href="{{SITE}}/" />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="Soft Studio — 520 ingredients for your next idea"
+    />
+    <meta
+      property="og:description"
+      content="A consistent collection of transparent food illustrations. Browse, search, and download the dataset on GitHub."
+    />
+    <meta property="og:url" content="{{SITE}}/" />
+    <meta property="og:image" content="{{OG_IMAGE}}" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Soft Studio Ingredients" />
+    <meta
+      name="twitter:description"
+      content="520 transparent ingredient illustrations. PNG + WebP + metadata."
+    />
+    <meta name="twitter:image" content="{{OG_IMAGE}}" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%232f4538'/%3E%3Ctext x='20' y='28' fill='white' text-anchor='middle' font-size='28' font-family='Georgia'%3Es%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" type="module"></script>
+    <script type="application/ld+json">
+      {{DATASET_SCHEMA}}
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#collection">Skip to ingredients</a>
+    <header class="masthead wrap">
+      <a class="brand" href="./" aria-label="Soft Studio home"
+        ><span class="brand-mark" aria-hidden="true">s</span
+        ><span>Soft Studio</span></a
+      >
+      <nav class="header-links" aria-label="Main navigation">
+        <a href="#downloads">Downloads</a
+        ><a href="{{GITHUB}}"
+          >View on GitHub <span aria-hidden="true">↗</span></a
+        >
+      </nav>
+    </header>
+    <main class="wrap">
+      <section class="hero" aria-labelledby="title">
+        <div class="hero-copy">
+          <p class="eyebrow">
+            <span class="status-dot" aria-hidden="true"></span>THE INGREDIENT
+            COLLECTION · V{{VERSION}}
+          </p>
+          <h1 id="title">
+            520 ingredients.<br />Ready for your<br /><em>next idea.</em>
+          </h1>
+          <p class="intro">
+            Transparent food illustrations for recipe apps,<br
+              class="desktop-break"
+            />
+            menus, meal planners, and the things you make.
+          </p>
+          <div class="hero-actions">
+            <a class="primary-cta" href="{{WEBP_DOWNLOAD}}"
+              >Download the collection <span aria-hidden="true">↓</span></a
+            ><a class="browse" href="#collection"
+              >Browse the images <span aria-hidden="true">↘</span></a
+            >
+          </div>
+          <p class="license-note">
+            <a href="{{LICENSE_URL}}">{{LICENSE_NAME}}</a
+            ><span aria-hidden="true"> · </span>WebP + PNG
+          </p>
+        </div>
+        <div class="hero-art" id="hero-art" aria-hidden="true"></div>
+      </section>
+      <div class="facts" aria-label="Dataset contents">
+        <span><strong>520</strong> illustrations</span
+        ><span><strong>20</strong> categories</span
+        ><span><strong>Transparent</strong> backgrounds</span
+        ><span><strong>One</strong> consistent style</span>
+      </div>
+      <section id="collection" aria-labelledby="collection-title">
+        <div class="collection-heading">
+          <div>
+            <p class="eyebrow">FIND YOUR INGREDIENTS</p>
+            <h2 id="collection-title">A little of everything.</h2>
+          </div>
+          <p>
+            Explore the collection.<br />Every image is included in the
+            download.
+          </p>
+        </div>
+        <div class="toolbar">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="10.5" cy="10.5" r="6.5" />
+              <path d="m16 16 4.5 4.5" /></svg
+            ><label class="sr-only" for="search">Find an ingredient</label
+            ><input
+              id="search"
+              type="search"
+              placeholder="Try lemon, tofu, or basil…"
+              enterkeyhint="search"
+              autocomplete="off"
+            />
+          </div>
+          <label class="sr-only" for="group">Ingredient category</label
+          ><select id="group">
+            <option value="">All categories</option>
+          </select>
+          <div class="backdrops" role="group" aria-label="Image background">
+            <button type="button" data-surface="light" aria-pressed="true">
+              Light</button
+            ><button type="button" data-surface="dark" aria-pressed="false">
+              Dark</button
+            ><button type="button" data-surface="check" aria-pressed="false">
+              <span class="checker-icon" aria-hidden="true"></span
+              ><span>Grid</span>
+            </button>
+          </div>
+        </div>
+        <div class="collection-meta">
+          <p id="result-count" role="status" aria-live="polite">
+            Loading the collection…
+          </p>
+          <span>Select an ingredient for a closer look</span>
+        </div>
+        <div id="gallery"></div>
+        <div id="empty" class="empty" hidden>
+          <h2>No ingredients found.</h2>
+          <p>Try another name or explore every category.</p>
+          <button type="button" id="reset">Clear filters</button>
+        </div>
+        <div id="error" class="empty" hidden>
+          <h2>The collection couldn’t load.</h2>
+          <p>Check your connection and try again.</p>
+          <button type="button" id="retry">Try again</button>
+        </div>
+        <noscript
+          ><p>
+            Enable JavaScript to search the gallery, or
+            <a href="{{GITHUB}}/releases/tag/v{{VERSION}}"
+              >download the collection on GitHub</a
+            >.
+          </p></noscript
+        >
+      </section>
+      <section
+        id="downloads"
+        class="downloads"
+        aria-labelledby="downloads-title"
+      >
+        <p class="eyebrow">TAKE THE WHOLE COLLECTION</p>
+        <h2 id="downloads-title">Small files. Plenty to work with.</h2>
+        <div class="download-grid">
+          <a class="download-card" href="{{WEBP_DOWNLOAD}}"
+            ><span class="file-kind">WEBP</span>
+            <h3>Ready for your app</h3>
+            <p>
+              520 optimized illustrations, up to 320 px. Transparent
+              backgrounds, small downloads.
+            </p>
+            <span class="download-label"
+              >Download WebP pack <span aria-hidden="true">↗</span></span
+            ></a
+          >
+          <a class="download-card" href="{{PNG_DOWNLOAD}}"
+            ><span class="file-kind">PNG</span>
+            <h3>Room to go bigger</h3>
+            <p>
+              All 520 original PNGs, at their generated resolution. About 777
+              MB.
+            </p>
+            <span class="download-label"
+              >Download original PNGs <span aria-hidden="true">↗</span></span
+            ></a
+          >
+          <a class="download-card" href="metadata/ingredients.csv" download
+            ><span class="file-kind">CSV + JSON</span>
+            <h3>A little structure</h3>
+            <p>
+              Names, categories, dimensions, file sizes, and checksums. Stable
+              IDs for every ingredient.
+            </p>
+            <span class="download-label"
+              >Download CSV metadata <span aria-hidden="true">↗</span></span
+            ></a
+          >
+        </div>
+        <p class="release-note">
+          Both image packs include metadata and license information.
+          <a href="{{GITHUB}}/releases/tag/v{{VERSION}}"
+            >View release notes and checksums →</a
+          >
+        </p>
+      </section>
+      <section id="about" class="about" aria-label="About this dataset">
+        <div>
+          <p class="eyebrow">MADE TO BE USED</p>
+          <h2>From our pantry<br />to your project.</h2>
+        </div>
+        <div>
+          <p>
+            This collection started as artwork for Pantry Plate. We’re sharing
+            it as a standalone resource for designers and developers building
+            with food.
+          </p>
+          <p>
+            The illustrations were AI-generated, then checked for transparent
+            backgrounds, consistent styling, and recognizable subjects. They’re
+            illustration assets, not photographs or scientific
+            food-identification labels.
+          </p>
+          <p>
+            <strong>{{LICENSE_NAME}}.</strong> {{LICENSE_SUMMARY}}
+            <a href="{{GITHUB}}/blob/main/DATASET_CARD.md"
+              >Read the dataset card →</a
+            >
+          </p>
+          <details class="credit-box">
+            <summary>How to credit the collection</summary>
+            <p id="credit-text">
+              Soft Studio Ingredients by Alex Wang ({{GITHUB}}), licensed under
+              CC BY 4.0 ({{LICENSE_URL}}).
+            </p>
+            <button type="button" id="copy-credit">Copy credit line</button>
+            <p id="credit-status" role="status" aria-live="polite"></p>
+          </details>
+        </div>
+      </section>
+      <footer>
+        <span
+          >Soft Studio Ingredients <span aria-hidden="true">/</span> Made by
+          <a href="https://github.com/alextyhwang">Alex Wang</a></span
+        >
+        <div>
+          <a href="{{GITHUB}}">GitHub ↗</a><a href="{{LICENSE_URL}}">License</a
+          ><a href="#title">Back to top ↑</a>
+        </div>
+      </footer>
+    </main>
+    <dialog id="detail" aria-labelledby="detail-title">
+      <button
+        type="button"
+        class="close icon-button"
+        aria-label="Close ingredient preview"
+      >
+        ×
+      </button>
+      <div class="detail-art">
+        <img id="detail-image" alt="" width="320" height="320" />
+      </div>
+      <div class="detail-body">
+        <p class="eyebrow" id="detail-group"></p>
+        <h2 id="detail-title"></h2>
+        <p class="detail-note">Soft Studio · Transparent background</p>
+        <div class="detail-actions">
+          <div class="arrows">
+            <button
+              type="button"
+              id="previous"
+              class="icon-button"
+              aria-label="Previous ingredient"
+            >
+              ←</button
+            ><span id="detail-position" aria-live="polite"></span
+            ><button
+              type="button"
+              id="next"
+              class="icon-button"
+              aria-label="Next ingredient"
+            >
+              →
+            </button>
+          </div>
+          <a id="download" class="download" download
+            >Save image <span aria-hidden="true">↗</span></a
+          >
+        </div>
+      </div>
+    </dialog>
+  </body>
+</html>
