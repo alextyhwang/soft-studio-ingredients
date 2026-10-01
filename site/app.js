@@ -6,6 +6,13 @@ const dialog = $("#detail");
 let ingredients = [];
 let visible = [];
 let current = 0;
+let showcase = 0;
+const showcases = [
+  ["cucumber", "tomato", "cheese", "avocado"],
+  ["strawberry", "milk", "honey", "bread"],
+  ["bok-choy", "shiitake", "tofu", "soy"],
+  ["lemon", "red-cabbage", "cherry", "basil"],
+];
 const normalize = (value) =>
   value
     .normalize("NFD")
@@ -136,6 +143,34 @@ $("#reset").addEventListener("click", () => {
   render();
   search.focus();
 });
+
+function renderShowcase(announce = false) {
+  const hero = $("#hero-art");
+  const items = showcases[showcase].map((id) =>
+    ingredients.find((item) => item.id === id),
+  );
+  hero.replaceChildren(
+    ...items.map((item) => {
+      const image = document.createElement("img");
+      image.src = item.image;
+      image.alt = "";
+      image.width = 320;
+      image.height = 320;
+      image.decoding = "async";
+      return image;
+    }),
+  );
+  if (announce)
+    $("#hero-status").textContent =
+      `Showing ${items.map((item) => item.name).join(", ")}.`;
+}
+
+$("#shuffle-hero").addEventListener("click", () => {
+  if (!ingredients.length) return;
+  showcase = (showcase + 1) % showcases.length;
+  renderShowcase(true);
+});
+
 async function load() {
   $("#error").hidden = true;
   $("#result-count").textContent = "Loading the collection…";
@@ -148,24 +183,7 @@ async function load() {
     [...new Set(ingredients.map((item) => item.group))].forEach((name) =>
       group.add(new Option(name, name)),
     );
-    const hero = $("#hero-art");
-    hero.replaceChildren();
-    [
-      "lemon",
-      "bok-choy",
-      "shiitake",
-      "red-cabbage",
-      "avocado",
-      "cherry",
-    ].forEach((id) => {
-      const item = ingredients.find((entry) => entry.id === id);
-      const image = document.createElement("img");
-      image.src = item.image;
-      image.alt = "";
-      image.width = 180;
-      image.height = 150;
-      hero.append(image);
-    });
+    renderShowcase();
     render();
   } catch {
     $("#result-count").textContent = "Collection unavailable";

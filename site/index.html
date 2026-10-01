@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
     />
-    <meta name="theme-color" content="#f5f5f2" />
+    <meta name="theme-color" content="#f7f7f7" />
     <meta
       name="description"
       content="520 transparent ingredient illustrations for recipe apps, menus, and meal planners. Browse the collection and download WebP, original PNG, and CSV/JSON metadata."
@@ -33,7 +33,7 @@
     <meta name="twitter:image" content="{{OG_IMAGE}}" />
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%232f4538'/%3E%3Ctext x='20' y='28' fill='white' text-anchor='middle' font-size='28' font-family='Georgia'%3Es%3C/text%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='20' fill='white'/%3E%3Cg fill='%23181818'%3E%3Ccircle cx='15' cy='15' r='2.5'/%3E%3Ccircle cx='25' cy='15' r='2.5'/%3E%3Ccircle cx='15' cy='25' r='2.5'/%3E%3Ccircle cx='25' cy='25' r='2.5'/%3E%3C/g%3E%3C/svg%3E"
     />
     <link rel="stylesheet" href="styles.css" />
     <script src="app.js" type="module"></script>
@@ -45,62 +45,98 @@
     <a class="skip" href="#collection">Skip to ingredients</a>
     <header class="masthead wrap">
       <a class="brand" href="./" aria-label="Soft Studio home"
-        ><span class="brand-mark" aria-hidden="true">s</span
+        ><span class="brand-mark" aria-hidden="true"
+          ><span></span><span></span><span></span><span></span></span
         ><span>Soft Studio</span></a
       >
       <nav class="header-links" aria-label="Main navigation">
         <a href="#downloads">Downloads</a
-        ><a href="{{GITHUB}}"
-          >View on GitHub <span aria-hidden="true">↗</span></a
+        ><a class="github-link" href="{{GITHUB}}"
+          >GitHub <span aria-hidden="true">↗</span></a
         >
       </nav>
     </header>
     <main class="wrap">
       <section class="hero" aria-labelledby="title">
         <div class="hero-copy">
-          <p class="eyebrow">
-            <span class="status-dot" aria-hidden="true"></span>THE INGREDIENT
-            COLLECTION · V{{VERSION}}
-          </p>
+          <p class="eyebrow">The ingredient collection</p>
           <h1 id="title">
-            520 ingredients.<br />Ready for your<br /><em>next idea.</em>
+            Good ingredients.<br /><span>For your next idea.</span>
           </h1>
           <p class="intro">
-            Transparent food illustrations for recipe apps,<br
+            520 transparent food illustrations for apps,<br
               class="desktop-break"
             />
-            menus, meal planners, and the things you make.
+            menus, and meal planners. A little of everything.
           </p>
           <div class="hero-actions">
-            <a class="primary-cta" href="{{WEBP_DOWNLOAD}}"
-              >Download the collection <span aria-hidden="true">↓</span></a
-            ><a class="browse" href="#collection"
-              >Browse the images <span aria-hidden="true">↘</span></a
-            >
+            <a class="download-composer" href="{{WEBP_DOWNLOAD}}">
+              <span class="composer-title"
+                >The whole collection, ready to use.</span
+              >
+              <span class="composer-bottom"
+                ><span class="composer-label"
+                  ><svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M12 3v12m-4-4 4 4 4-4M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"
+                    /></svg
+                  >Download collection</span
+                ><span class="round-arrow" aria-hidden="true"
+                  ><svg viewBox="0 0 24 24">
+                    <path d="M12 5v14m-6-6 6 6 6-6" /></svg></span
+              ></span>
+            </a>
+            <div class="hero-links">
+              <a class="browse" href="#collection"
+                >Browse the ingredients <span aria-hidden="true">↘</span></a
+              ><a class="license-note" href="{{LICENSE_URL}}"
+                >{{LICENSE_NAME}}</a
+              >
+            </div>
           </div>
-          <p class="license-note">
-            <a href="{{LICENSE_URL}}">{{LICENSE_NAME}}</a
-            ><span aria-hidden="true"> · </span>WebP + PNG
-          </p>
         </div>
-        <div class="hero-art" id="hero-art" aria-hidden="true"></div>
+        <div class="hero-visual">
+          <div class="hero-art" id="hero-art" aria-hidden="true"></div>
+          <a
+            class="art-bubble art-browse"
+            href="#collection"
+            aria-label="Browse all 520 ingredients"
+            ><svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" /></svg
+          ></a>
+          <button
+            class="art-bubble art-refresh"
+            type="button"
+            id="shuffle-hero"
+            aria-label="Show another ingredient combination"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 9a8 8 0 1 1 .5 7M4 4v5h5" />
+            </svg>
+          </button>
+          <span
+            id="hero-status"
+            class="sr-only"
+            role="status"
+            aria-live="polite"
+          ></span>
+          <p class="art-caption">A few from the collection</p>
+        </div>
       </section>
       <div class="facts" aria-label="Dataset contents">
         <span><strong>520</strong> illustrations</span
         ><span><strong>20</strong> categories</span
         ><span><strong>Transparent</strong> backgrounds</span
-        ><span><strong>One</strong> consistent style</span>
+        ><span><strong>WebP</strong> + PNG</span>
       </div>
       <section id="collection" aria-labelledby="collection-title">
         <div class="collection-heading">
           <div>
-            <p class="eyebrow">FIND YOUR INGREDIENTS</p>
-            <h2 id="collection-title">A little of everything.</h2>
+            <h2 id="collection-title">
+              Your creative pantry.<br /><span>Pick something good.</span>
+            </h2>
           </div>
-          <p>
-            Explore the collection.<br />Every image is included in the
-            download.
-          </p>
+          <p>Every ingredient is included.<br />Find one, or take them all.</p>
         </div>
         <div class="toolbar">
           <div class="search-wrap">
@@ -162,8 +198,10 @@
         class="downloads"
         aria-labelledby="downloads-title"
       >
-        <p class="eyebrow">TAKE THE WHOLE COLLECTION</p>
-        <h2 id="downloads-title">Small files. Plenty to work with.</h2>
+        <p class="eyebrow">Take the whole collection</p>
+        <h2 id="downloads-title">
+          A format for every project.<br /><span>Ready when you are.</span>
+        </h2>
         <div class="download-grid">
           <a class="download-card" href="{{WEBP_DOWNLOAD}}"
             ><span class="file-kind">WEBP</span>
@@ -208,8 +246,8 @@
       </section>
       <section id="about" class="about" aria-label="About this dataset">
         <div>
-          <p class="eyebrow">MADE TO BE USED</p>
-          <h2>From our pantry<br />to your project.</h2>
+          <p class="eyebrow">Made to be used</p>
+          <h2>From our pantry<br /><span>to your project.</span></h2>
         </div>
         <div>
           <p>
