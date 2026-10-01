@@ -2,6 +2,8 @@ node_modules/
 dist/
 .release/
 .checks/
+motion/output/
+__pycache__/
 .vercel/
 *.log
 .env

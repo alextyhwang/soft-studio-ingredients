@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import {
   copyFileSync,
+  cpSync,
   existsSync,
   mkdirSync,
   readFileSync,
@@ -87,6 +88,10 @@ if (/\{\{[A-Z_]+\}\}/.test(html))
 writeFileSync(resolve(dist, "index.html"), html);
 for (const file of ["styles.css", "app.js"])
   copyFileSync(resolve(root, "site", file), resolve(dist, file));
+if (existsSync(resolve(root, "site/launch")))
+  cpSync(resolve(root, "site/launch"), resolve(dist, "launch"), {
+    recursive: true,
+  });
 writeFileSync(resolve(dist, "ingredients.json"), JSON.stringify(items));
 mkdirSync(resolve(dist, "metadata"), { recursive: true });
 for (const file of ["ingredients.json", "ingredients.csv", "prompts.json"])
