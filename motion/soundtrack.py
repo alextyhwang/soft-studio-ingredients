@@ -14,6 +14,25 @@ CUTS = [
 ]
 ZOOM_START, ZOOM_END, END_CARD = 185/FPS, 372/FPS, 426/FPS
 
+# Sparse local cuts continue through the pullback. Wave gaps lengthen from
+# 167 ms to 617 ms, while fewer cells remain active. None restores a cell's
+# final ingredient. Coordinates are row/column offsets from the focal cell.
+SWAP_WAVES = [
+    (212, [(0, 0, 'mango')]),
+    (222, [(0, 0, 'avocado')]),
+    (234, [(0, 0, 'strawberry'), (-1, 0, 'orange')]),
+    (249, [(0, 0, None), (-1, 0, 'pineapple'), (0, 1, 'kiwi'), (0, -1, 'peach')]),
+    (268, [(-1, 0, None), (0, 1, 'cherry'), (0, -1, None), (1, 0, 'watermelon')]),
+    (292, [(0, 1, None), (1, 0, 'mango'), (1, 1, 'grapefruit')]),
+    (322, [(1, 0, None), (1, 1, 'dragon-fruit')]),
+    (359, [(1, 1, None)]),
+]
+ZOOM_SWAPS = sorted(
+    (frame+[0, 3, 1, 5][i], row, col, ingredient)
+    for frame, changes in SWAP_WAVES
+    for i, (row, col, ingredient) in enumerate(changes)
+)
+
 
 def compose(destination):
     rng = np.random.default_rng(520)
@@ -43,6 +62,10 @@ def compose(destination):
     for i,(frame,_) in enumerate(CUTS):
         tap(frame/FPS, i, .32 if i<3 else .24)
 
+    for i,(frame,_,_,_) in enumerate(ZOOM_SWAPS):
+        progress=(frame-ZOOM_SWAPS[0][0])/(ZOOM_SWAPS[-1][0]-ZOOM_SWAPS[0][0])
+        tap(frame/FPS, i+len(CUTS), .14-.07*progress)
+
     length = ZOOM_END-ZOOM_START
     t = time(length)
     noise = rng.normal(0, 1, len(t))
@@ -70,7 +93,8 @@ def compose(destination):
         output.writeframes((mix*32767).astype('<i2').tobytes())
     return {'sample_rate':RATE,'seconds':DURATION,'channels':2,
             'peak_dbfs_before_mastering':float(20*np.log10(np.max(np.abs(mix)))),
-            'cut_frames':[frame for frame,_ in CUTS]}
+            'cut_frames':[frame for frame,_ in CUTS],
+            'grid_swap_frames':[event[0] for event in ZOOM_SWAPS]}
 
 
 if __name__=='__main__':

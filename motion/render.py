@@ -12,7 +12,7 @@ import time
 import imageio_ffmpeg
 from PIL import Image as PILImage, ImageDraw, ImageFont
 import skia
-from soundtrack import compose, CUTS, DURATION, FPS, ZOOM_START, ZOOM_END, END_CARD
+from soundtrack import compose, CUTS, DURATION, FPS, ZOOM_START, ZOOM_END, END_CARD, ZOOM_SWAPS
 
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'motion'/'output'
@@ -71,7 +71,7 @@ def text(c,value,x,y,size,fill=INK,tracking=0):
         x+=f.measureText(char)+tracking
 
 
-@lru_cache(maxsize=550)
+@lru_cache(maxsize=600)
 def asset(id,large=False):
     item=ITEMS[id]
     original=ROOT/'.release'/item['png']['path']
@@ -113,6 +113,28 @@ HERO_SIZE=740
 FINAL_ZOOM=940/(COLS*CELL)
 
 
+def build_grid_states():
+    """Use real pair exchanges, retaining all 520 distinct assets at every step."""
+    state=grid_ids.copy()
+    states=[]
+    for frame,row,col,ingredient in ZOOM_SWAPS:
+        index=(FOCUS_ROW+row)*COLS+FOCUS_COL+col
+        target=ingredient or grid_ids[index]
+        partner=state.index(target)
+        state[index],state[partner]=state[partner],state[index]
+        states.append(tuple(state))
+    return states
+
+
+GRID_STATES=build_grid_states()
+GRID_SWAP_TIMES=[event[0]/FPS for event in ZOOM_SWAPS]
+
+
+def grid_ingredients(t):
+    index=bisect_right(GRID_SWAP_TIMES,t+1e-7)-1
+    return GRID_STATES[index] if index>=0 else grid_ids
+
+
 def camera(t):
     progress=travel((t-ZOOM_START)/(ZOOM_END-ZOOM_START))
     zoom=math.exp(lerp(math.log(HERO_SIZE/80),math.log(FINAL_ZOOM),progress))
@@ -134,12 +156,12 @@ def grid(c,t):
     c.translate(-fx,-fy)
     left,right=fx-W/(2*zoom)-90,fx+W/(2*zoom)+90
     top,bottom=fy-H/(2*zoom)-90,fy+H/(2*zoom)+90
-    for i,id in enumerate(grid_ids):
+    for i,id in enumerate(grid_ingredients(t)):
         col,row=i%COLS,i//COLS
         cx,cy=(col+.5)*CELL,(row+.5)*CELL
         if left<cx<right and top<cy<bottom:
             # The final cuts happen inside the already-moving camera.
-            if i==FOCUS:
+            if i==FOCUS and t<CUT_TIMES[-1]:
                 id=current_ingredient(t)
             # Nearby ingredients retain original-resolution artwork as they enter.
             large=abs(col-FOCUS_COL)<=1 and abs(row-FOCUS_ROW)<=1
@@ -170,11 +192,11 @@ def still(t,path,width=1080):
 
 
 def storyboard():
-    times=[0,.18,.35,ZOOM_START,3.45,4.10,4.8,6.50,8.0]
+    times=[0,.18,.35,3.60,3.94,4.18,4.52,6.50,8.0]
     board=PILImage.new('RGB',(1080,3*496),'#eaeaea')
     draw=ImageDraw.Draw(board)
     for i,t in enumerate(times):
-        path=OUT/f'v3-frame-{t:.2f}.png'
+        path=OUT/f'v4-frame-{t:.2f}.png'
         still(t,path,360)
         x,y=(i%3)*360,(i//3)*496
         with PILImage.open(path) as frame:
@@ -184,7 +206,7 @@ def storyboard():
     board.save(OUT/'storyboard.jpg',quality=95)
     still(0,OUT/'poster.png')
     (OUT/'grid-manifest.json').write_text(json.dumps({
-        'count':520,'columns':COLS,'rows':ROWS,'ids':grid_ids},indent=2))
+        'count':520,'columns':COLS,'rows':ROWS,'ids':list(GRID_STATES[-1])},indent=2))
     print(f'Storyboard: {OUT / "storyboard.jpg"}',flush=True)
 
 
@@ -224,7 +246,7 @@ def render(draft=False):
         code=process.wait()
         if code:
             raise RuntimeError(f'Encoder exited {code}; see {log.name}')
-    report.update({'revision':3,'path':str(path),'width':width,'height':height,'fps':fps,
+    report.update({'revision':4,'path':str(path),'width':width,'height':height,'fps':fps,
                    'frames':fps*SECONDS,'bytes':path.stat().st_size,'unique_grid_images':520,
                    'render_seconds':round(time.perf_counter()-start,2)})
     (OUT/('draft-report.json' if draft else 'render-report.json')).write_text(json.dumps(report,indent=2))
