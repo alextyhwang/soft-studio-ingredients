@@ -1,120 +1,77 @@
-"""Original stereo score and frame-synchronized effects. No sampled recordings."""
+"""Dry, frame-synchronized sound design. No music bed or third-party recordings."""
 from pathlib import Path
 import wave
 import numpy as np
 
-RATE = 48000
-DURATION = 16
-FLIPS = [2.80, 3.20, 3.55, 3.85, 4.12, 4.36, 4.58, 4.78,
-         4.97, 5.15, 5.32, 5.49, 5.66, 5.83, 6.00, 6.17]
+RATE, FPS, DURATION = 48000, 60, 9
+CUTS = [
+    (0, 'tomato'), (24, 'lemon'), (45, 'avocado'), (63, 'strawberry'),
+    (78, 'shiitake'), (91, 'orange'), (103, 'broccoli'), (114, 'cherry'),
+    (124, 'garlic'), (134, 'red-cabbage'), (144, 'mango'), (154, 'ginger'),
+    (164, 'egg'), (173, 'basil'), (182, 'cheese'), (191, 'pear'),
+    (200, 'salmon'), (209, 'passion-fruit'), (218, 'tofu'),
+    (227, 'coconut'), (236, 'bok-choy'), (245, 'radish'), (254, 'lemon'),
+]
+ZOOM_START, ZOOM_END, END_CARD = 264/FPS, 372/FPS, 426/FPS
 
 
 def compose(destination):
     rng = np.random.default_rng(520)
-    dry = np.zeros((RATE * DURATION, 2), dtype=np.float64)
-    atmosphere = np.zeros_like(dry)
+    mix = np.zeros((RATE*DURATION, 2), dtype=np.float64)
 
-    def add(signal, start, gain=1, pan=0, bus=dry):
-        offset = int(start * RATE)
-        length = min(len(signal), len(bus) - offset)
-        if length <= 0:
+    def add(signal, start, gain=1, pan=0):
+        offset = round(start*RATE)
+        count = min(len(signal), len(mix)-offset)
+        if count <= 0:
             return
-        stereo = np.column_stack((signal[:length] * np.sqrt((1 - pan) / 2),
-                                  signal[:length] * np.sqrt((1 + pan) / 2)))
-        bus[offset:offset + length] += gain * stereo
+        mix[offset:offset+count, 0] += signal[:count]*gain*np.sqrt((1-pan)/2)
+        mix[offset:offset+count, 1] += signal[:count]*gain*np.sqrt((1+pan)/2)
 
     def time(duration):
-        return np.arange(round(duration * RATE)) / RATE
+        return np.arange(round(duration*RATE))/RATE
 
-    def freq(note):
-        return 440 * 2 ** ((note - 69) / 12)
+    def tap(start, index, gain=.25):
+        t = time(.09)
+        noise = rng.normal(0, 1, len(t))
+        body = np.convolve(noise, np.ones(9)/9, mode='same')
+        attack = np.minimum(t/.0007, 1)
+        shell = np.sin(2*np.pi*(380+(index%4)*90)*t)*np.exp(-t*115)
+        click = noise*np.exp(-t*500)*.12
+        signal = (body*np.exp(-t*100)*.8 + shell*.7 + click)*attack
+        add(signal, start, gain, [-.10,.08,0,.12][index%4])
 
-    def pluck(note, start, gain=.12, pan=0, duration=1.1):
-        t = time(duration)
-        f = freq(note)
-        envelope = (1 - np.exp(-t * 480)) * np.exp(-t * 6)
-        signal = (np.sin(2 * np.pi * f * t + .8 * np.sin(2 * np.pi * f * 2 * t) * np.exp(-t * 12))
-                  + .15 * np.sin(2 * np.pi * f * 3 * t)) * envelope
-        add(signal, start, gain, pan, atmosphere)
+    for i,(frame,_) in enumerate(CUTS):
+        tap(frame/FPS, i, .32 if i<3 else .24)
 
-    # A restrained Cmaj9 / Am9 / Fmaj9 / G6 progression, four seconds per chord.
-    chords = [[48, 55, 59, 62, 64], [45, 52, 55, 59, 60],
-              [41, 48, 52, 55, 57], [43, 50, 55, 57, 59]]
-    for bar, notes in enumerate(chords):
-        t = time(4.6)
-        pad = np.zeros_like(t)
-        for index, note in enumerate(notes):
-            f = freq(note + 12)
-            pad += (np.sin(2*np.pi*f*t) + .3*np.sin(2*np.pi*f*1.003*t + index)) / len(notes)
-        envelope = np.minimum(1, t / .7) * np.clip((4.6 - t) / 1.2, 0, 1)
-        add(pad * envelope, bar * 4, .11, (-1)**bar * .25, atmosphere)
-
-    notes = [72, 76, 79, 83, 74, 79, 76, 72]
-    for i in range(24):
-        pluck(notes[i % len(notes)] + (0 if i < 16 else -2), .25 + i * .5,
-              .075 if i < 12 else .058, np.sin(i * 1.7) * .55)
-
-    # Round, low-volume percussion. The last four seconds are left open for the title.
-    for beat in range(2, 25):
-        start = beat * .5
-        if beat % 2 == 0:
-            t = time(.28)
-            phase = 2*np.pi*(48*t + (105-48)*.025*(1-np.exp(-t/.025)))
-            add(np.sin(phase) * np.exp(-t*18) * np.minimum(t/.003, 1), start, .19)
-        else:
-            t = time(.12)
-            noise = rng.normal(0, 1, len(t))
-            soft = np.convolve(noise, np.ones(7)/7, mode='same')
-            add(soft*np.exp(-t*38)*np.minimum(t/.002, 1), start, .055, .16)
-        for step in range(2):
-            t = time(.055)
-            n = rng.normal(0, 1, len(t))
-            high = n - np.convolve(n, np.ones(9)/9, mode='same')
-            add(high*np.exp(-t*100)*np.minimum(t/.0015, 1), start + step*.25, .012, (-1)**beat*.3)
-
-    # Small glass/wood taps exactly on entrances and the centers of the flips.
-    events = [.38, .64, .90] + [v+.065 for v in FLIPS] + [10.05, 12.48, 13.04]
-    for i, start in enumerate(events):
-        t = time(.18)
-        f = [1100, 1320, 1650, 980][i % 4]
-        click = (np.sin(2*np.pi*f*t) + .28*np.sin(2*np.pi*f*2.13*t))
-        click *= np.exp(-t*65) * np.minimum(t/.001, 1)
-        add(click, start, .11 if i < 3 else .08, np.sin(i)*.35)
-
-    # A brushed, airy reverse swell that resolves with the full-grid reveal.
-    for start, duration, gain in [(6.40, 3.65, .055), (12.18, .7, .035)]:
-        t = time(duration)
-        n = rng.normal(0, 1, len(t))
-        brushed = np.convolve(n, np.ones(28)/28, mode='same')
-        envelope = np.sin(np.pi * t / duration) ** 1.8
-        add(brushed*envelope, start, gain, -.15, atmosphere)
-
-    for note, offset in [(72, 0), (76, .05), (79, .10), (86, .16)]:
-        pluck(note, 10.05+offset, .10, (note-79)/20, 2.4)
-    for note, offset in [(60, 0), (67, .08), (72, .16), (76, .24)]:
-        pluck(note, 12.5+offset, .10, (note-68)/20, 3.4)
-
-    # Stereo early reflections, then a short diffuse tail.
-    reverberant = atmosphere.copy()
-    for delay, gain in [(.071, .22), (.113, .17), (.197, .13), (.311, .10), (.457, .06)]:
-        n = round(delay * RATE)
-        reverberant[n:] += atmosphere[:-n, ::-1] * gain
-    mix = dry + reverberant
-    timeline = np.arange(len(mix)) / RATE
-    mix *= (np.minimum(timeline/.04, 1) * np.clip((DURATION-timeline)/.65, 0, 1))[:, None]
-    mix = np.tanh(mix * 1.5)
-    peak = np.max(np.abs(mix))
-    mix *= .78 / max(peak, 1e-8)
-    destination = Path(destination)
-    destination.parent.mkdir(parents=True, exist_ok=True)
-    with wave.open(str(destination), 'wb') as output:
+    length = ZOOM_END-ZOOM_START
+    t = time(length)
+    noise = rng.normal(0, 1, len(t))
+    air = np.convolve(noise, np.ones(12)/12, mode='same')
+    envelope = np.sin(np.pi*t/length)**2.2
+    add(air*envelope, ZOOM_START, .16)
+    for start,gain in [(0,.18),(ZOOM_END,.22),(END_CARD,.19)]:
+        t = time(.25)
+        phase = 2*np.pi*(48*t + 45*.028*(1-np.exp(-t/.028)))
+        signal = np.sin(phase)*np.exp(-t*23)*np.minimum(t/.002,1)
+        add(signal,start,gain)
+    tap(END_CARD, 0, .19)
+    dry=mix.copy()
+    for seconds,gain in [(.027,.11),(.053,.055)]:
+        delay=round(seconds*RATE)
+        mix[delay:]+=dry[:-delay,::-1]*gain
+    mix=np.tanh(mix*1.3)
+    mix *= .75/max(np.max(np.abs(mix)),1e-9)
+    destination=Path(destination)
+    destination.parent.mkdir(parents=True,exist_ok=True)
+    with wave.open(str(destination),'wb') as output:
         output.setnchannels(2)
         output.setsampwidth(2)
         output.setframerate(RATE)
-        output.writeframes((mix * 32767).astype('<i2').tobytes())
-    return {'sample_rate': RATE, 'seconds': DURATION, 'channels': 2,
-            'peak_dbfs_before_mastering': float(20*np.log10(np.max(np.abs(mix))))}
+        output.writeframes((mix*32767).astype('<i2').tobytes())
+    return {'sample_rate':RATE,'seconds':DURATION,'channels':2,
+            'peak_dbfs_before_mastering':float(20*np.log10(np.max(np.abs(mix)))),
+            'cut_frames':[frame for frame,_ in CUTS]}
 
 
-if __name__ == '__main__':
+if __name__=='__main__':
     print(compose(Path(__file__).parent/'output'/'soundtrack.wav'))

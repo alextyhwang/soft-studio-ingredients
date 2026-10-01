@@ -1,34 +1,35 @@
 # Soft Studio launch film
 
-A 16-second, 4:5 launch film for the X feed. It uses the actual public dataset and the landing page’s neutral colors, regular sans-serif typography, white rounded controls, and soft ingredient artwork.
+A nine-second edit for X. One ingredient at a time, accelerating hard cuts, a continuous pullback to all 520 images, and one final message. The pale gray background and regular black type match the landing page.
 
-The deliverable is `site/launch/soft-studio-launch-x.mp4`. Watch it at <https://soft-studio-ingredients.vercel.app/launch>. The video plays only after the viewer chooses Play; sound is enabled and all essential information is also visible on screen.
+The deliverable is `site/launch/soft-studio-launch-x.mp4`. Watch it at <https://soft-studio-ingredients.vercel.app/launch>. Playback starts only after the viewer chooses Play, with sound enabled.
 
 ## Edit and render
 
-Install Python 3.12 and the packages in `motion/requirements.txt`, then run:
+Use Python 3.12 and the packages in `motion/requirements.txt`:
 
 ```powershell
 python -m pip install -r motion/requirements.txt
-python motion/render.py --stills  # contact sheet + full-size poster
-python motion/render.py --draft   # 30 fps, half-resolution review export
-python motion/render.py           # 1080 × 1350, 60 fps, final export
+python motion/render.py --stills
+python motion/render.py --draft
+python motion/render.py
 ```
 
-The renderer currently uses Windows Segoe UI from `C:/Windows/Fonts`. Outputs and inspection files go into the ignored `motion/output` folder. Copy the final MP4 and poster to `site/launch`, then run the normal site build.
+The renderer uses Windows Segoe UI. It reads the original PNGs in `.release/originals` for the large ingredient shots when available, and the released WebPs for the grid. It crops transparent padding at draw time to keep the match cuts visually consistent. Source artwork files are unchanged.
 
-## Timing
+Outputs go into the ignored `motion/output` directory. Copy the final MP4 and poster to `site/launch`, then run the site build.
 
-| Time        | Picture                                                                             | Sound                                           |
-| ----------- | ----------------------------------------------------------------------------------- | ----------------------------------------------- |
-| 0–2.7 s     | Three floating ingredients settle beneath the introductory title.                   | Warm plucks, soft taps, a restrained chord bed. |
-| 2.7–6.4 s   | Three cards flip through 16 ingredient combinations, accelerating.                  | Frame-synchronized clicks over a light beat.    |
-| 6.4–10.1 s  | The cards become the center of a continuous camera pullback.                        | An airy swell opens into the reveal.            |
-| 10.1–12.2 s | All 520 unique ingredients are visible in a 26 × 20 grid.                           | A short four-note resolution.                   |
-| 12.2–16 s   | A rounded end card: “All 520. All free.” Site URL and CC BY 4.0 credit requirement. | Final chord with a clean tail.                  |
+## Edit points
 
-`soundtrack.py` synthesizes the original stereo score and effects from oscillators and noise. There are no third-party music recordings or audio samples. The mix is mastered near −16 LUFS without clipping.
+| Time      | Picture                                                                             | Sound                                |
+| --------- | ----------------------------------------------------------------------------------- | ------------------------------------ |
+| 0–4.4 s   | 23 centered ingredient shots, accelerating from 400 ms to 150 ms cuts.              | Short, dry taps exactly on the cuts. |
+| 4.4–6.2 s | Continuous pullback from the final lemon into a 20 × 26 grid.                       | A single brushed sweep.              |
+| 6.2–7.1 s | All 520 unique ingredients, fully visible.                                          | Soft low impact, then a pause.       |
+| 7.1–9 s   | Hard cut to “520 ingredients. Free.” with a small wordmark and license credit note. | Closing tap and short decay.         |
 
-The final export uses H.264 High, 4:2:0, AAC-LC stereo at 48 kHz, and a front-loaded MP4 index for quick playback. These codecs follow [X’s published video specifications](https://help.x.com/en/business-and-advertising/creative-ad-specifications); the 16-second file is within [standard account duration and size limits](https://help.x.com/en/using-x/x-videos).
+There is no text during the ingredient sequence. The frame contains only the artwork and background until the final card. No badges, controls, labels, or decorative panels.
 
-The artwork remains licensed under CC BY 4.0. The movie does not alter any of the 520 source images or the dataset release.
+`soundtrack.py` synthesizes the sound effects. The soundtrack has no music bed, voiceover, or third-party recordings. The cut list is shared by the renderer and soundtrack so edits land on exact 60 fps frame boundaries.
+
+The MP4 uses H.264 High, YUV 4:2:0, 1080 × 1350 at 60 fps, AAC-LC stereo at 48 kHz, and fast-start metadata. The artwork remains CC BY 4.0.
