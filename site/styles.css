@@ -1002,7 +1002,7 @@ dialog::backdrop {
     gap: 12px;
     font-size: 12px;
   }
-  .header-links > a:first-child {
+  .header-links > a[href="#downloads"] {
     display: none;
   }
   .header-links .github-link {

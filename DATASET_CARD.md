@@ -1,42 +1,51 @@
 # Soft Studio Ingredients
 
-Version: 1.0.0. Publisher: Alex Wang. License: CC BY 4.0.
+Version: 1.1.0. Publisher: Alex Wang. Illustration license: CC BY 4.0.
 
 ## Contents
 
-520 distinct ingredient IDs across 20 culinary groups. Each entry has a reviewed transparent WebP display image and an original transparent PNG. The source collection was created for Pantry Plate and is released here as an independent illustration dataset.
+812 distinct ingredient illustrations across 21 culinary groups, plus 809 recipes and 1,192 ingredient-to-artwork mappings. This release adds 292 illustrations to version 1.0.0. The original release remains available under its versioned tag and downloads.
 
-| Resource | Contents |
-| --- | --- |
-| `images/` | 520 optimized WebP files; maximum dimension 320 pixels |
-| Original PNG release archive | 520 full-resolution generated PNGs; dimensions vary and are recorded per file |
-| `metadata/ingredients.json` | Versioned catalog, names, groups, storage categories, paths, dimensions, byte counts, and SHA-256 hashes |
-| `metadata/ingredients.csv` | The same per-image fields in a flat table |
-| `metadata/prompts.json` | The recorded generation or final correction prompt for each ingredient |
-| `ATTRIBUTION.md` | Suggested credit and modification notice |
+| Resource                            | Contents                                                                                                    |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `images/`                           | 812 transparent, normalized 320 × 320 WebP files                                                            |
+| Original PNG release archive        | 812 full-resolution generated PNGs; dimensions vary                                                         |
+| `metadata/ingredients.json` and CSV | IDs, names, groups, categories, dimensions, bytes, hashes and display policy                                |
+| `metadata/prompts.json`             | Recorded final generation/correction prompts                                                                |
+| `metadata/ingredient-mapping.json`  | 1,192 recipe/catalog identities mapped to decorative artwork IDs                                            |
+| `metadata/recipes.json`             | 809 recipes with normalized planning quantities, source measures, steps, tags, source links and artwork IDs |
+| `RECIPE_SOURCES.md`                 | Recipe attribution and scope of rights                                                                      |
 
-The active WebPs total 9,778,818 bytes. Original PNGs total 776,725,214 bytes. ZIP archives also contain metadata and license documents, so archive sizes differ slightly. Original PNGs are distributed through GitHub Releases rather than included in Git history.
+Display WebPs total 12,859,816 bytes. Original PNGs total 1,193,753,568 bytes. ZIP sizes include metadata and documents. Originals are distributed through GitHub Releases rather than Git history.
 
 ## Creation and processing
 
-The illustrations were generated using the built-in OpenAI Codex image generation tool with transparent backgrounds. Their shared direction uses soft studio lighting, realistic food materials, a compact silhouette, and a white sticker edge. The exact underlying image model/version was not recorded; no model-specific claim is made.
+The illustrations were generated individually using built-in OpenAI image generation with transparent backgrounds. Their shared direction uses diffuse upper-left studio light, realistic food materials and a compact readable silhouette. No specific underlying image model/version is claimed.
 
-Each ingredient was generated separately. An AI assistant visually reviewed all final display files against their labels; automated checks verified transparency, bounds, distinct original hashes, and file integrity. Twenty-eight content/composition corrections were resolved, such as removing unwanted bowls or garnish. Selective deterministic white-edge treatment was applied to 209 display derivatives. The corresponding PNG originals were not changed by that edge treatment. As a result, original PNGs and display WebPs can have different rims and margins.
+All display derivatives use the same normalized-v1 policy: 320-pixel square canvas, a maximum 284-pixel subject and a deterministic six-pixel white outline. Original PNGs were not changed by normalization, so their rims and margins may differ. Version 1.1.0 also updates the original 520 WebP derivatives to this uniform policy while retaining their IDs.
 
-The recorded prompts describe the final generation or corrective edit. They are provenance, not a promise of pixel-identical regeneration. The release exports only public dataset fields; local machine paths, credentials, account identifiers, and application data are excluded.
+The newest 253 subjects were visually reviewed on light and dark backgrounds at 64 pixels. Seventy-five form/composition refinements removed clutter or corrected ingredient interpretation, including raw knafeh pastry, water spinach and shredded cooked codfish bulljaw. Earlier 39 additions use the same artwork pipeline. Automated checks verify hashes, dimensions, transparency during export, unique IDs, prompts and complete recipe-to-artwork coverage.
+
+Recorded prompts describe the final generation or corrective edit; they do not promise pixel-identical regeneration. Only public dataset fields are exported. Local machine paths, credentials and account data are excluded.
+
+## Recipe data
+
+The collection contains 14 Pantry Plate starter recipes, 25 sourced Asian adaptations and 770 additional TheMealDB imports. Original source names and measures remain separate from normalized planning quantities. Artwork aliases preserve recipe ingredient identities rather than substituting ingredients.
+
+Imported recipe yield/time and some quantities are estimates; original measures and source links remain available for cooking. Recipe photos are referenced by their original URLs and are not bundled in these archives. The landing-page recipe cards use ingredient illustrations.
 
 ## Intended uses and limits
 
-Suitable uses include recipe interfaces, pantry and meal-planning apps, menus, educational illustrations, design prototypes, and other visual projects that benefit from consistent ingredient artwork.
+Use these synthetic illustrations in recipe interfaces, pantry apps, menus, educational material and design prototypes. They are not photographs, nutritional measurements or scientific identification ground truth. Similar cultivars, powders, oils and preparations may look alike. Category labels are catalog groupings, not storage guidance.
 
-These are synthetic illustrations, not photographs, nutritional measurements, or scientific identification ground truth. Visually similar cultivars, powders, oils, and preparations may not be distinguishable from their appearance alone. The review checks observable plausibility, not botanical or chemical identity. Category labels are convenient catalog groupings, not food-storage guidance.
+No train/validation/test split is supplied. This is an illustration collection, not a benchmark.
 
-No train/validation/test split is supplied. This is an illustration collection, not a benchmark. If used for model development, account for its synthetic origin, common generation style, and limited visual diversity.
+## Rights and attribution
 
-## License and credit
+The illustrations are available under CC BY 4.0 with credit, a license link and modification notices. See [ATTRIBUTION.md](ATTRIBUTION.md) and [LICENSE](LICENSE). The license applies to rights held by the publisher.
 
-Use and adapt the collection, including commercially, under CC BY 4.0. Give appropriate credit, link the license, and indicate modifications. See [ATTRIBUTION.md](ATTRIBUTION.md) and the full [LICENSE](LICENSE). The license grants rights the publisher holds and does not claim new rights where none exist.
+Recipe text and referenced photography retain their original source rights; the artwork license does not grant rights to third-party recipe content. See [RECIPE_SOURCES.md](RECIPE_SOURCES.md), and each recipe's publisher/API/source URLs.
 
 ## Versioning and corrections
 
-Ingredient IDs are stable within this release. Use file hashes and the `v1.0.0` release tag to pin exact versions. Report a mislabeled image or visual defect through this repository’s issues, including the ingredient ID and release version. Future corrections should ship as a new release rather than replace existing release assets silently.
+Pin exact assets using SHA-256 hashes and the `v1.1.0` tag. Existing illustration IDs remain stable. Report issues with the ingredient/recipe ID and release version. Corrections should ship in a new release rather than silently replace earlier release downloads.

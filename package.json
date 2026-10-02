@@ -1,12 +1,12 @@
 {
   "name": "soft-studio-ingredients",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
-  "description": "520 transparent ingredient illustrations, with a searchable gallery and downloadable dataset.",
+  "description": "812 transparent ingredient illustrations and 809 recipes, with searchable galleries and downloadable datasets.",
   "scripts": {
     "build": "node scripts/build-site.mjs",
     "verify": "node scripts/verify.mjs",
-    "check": "node --check site/app.js && node --check scripts/build-site.mjs && node --check scripts/verify.mjs"
+    "check": "node --check site/app.js && node --check site/recipes.js && node --check scripts/build-site.mjs && node --check scripts/verify.mjs && node --check scripts/import-pantry-plate.mjs"
   }
 }

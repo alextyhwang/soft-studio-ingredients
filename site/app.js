@@ -178,7 +178,11 @@ async function load() {
     const response = await fetch("ingredients.json");
     if (!response.ok) throw new Error("Collection unavailable");
     ingredients = await response.json();
-    if (ingredients.length !== 520) throw new Error("Incomplete collection");
+    if (
+      !ingredients.length ||
+      new Set(ingredients.map((item) => item.id)).size !== ingredients.length
+    )
+      throw new Error("Incomplete collection");
     group.replaceChildren(new Option("All categories", ""));
     [...new Set(ingredients.map((item) => item.group))].forEach((name) =>
       group.add(new Option(name, name)),

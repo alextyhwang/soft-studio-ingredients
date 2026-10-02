@@ -17,7 +17,13 @@ const catalog = JSON.parse(
 );
 const dist = resolve(root, "dist");
 mkdirSync(resolve(dist, "images"), { recursive: true });
-if (catalog.items.length !== 520) throw new Error("Expected 520 ingredients.");
+if (catalog.items.length !== config.ingredientCount)
+  throw new Error("Incomplete ingredient catalog.");
+const recipes = JSON.parse(
+  readFileSync(resolve(root, "metadata/recipes.json"), "utf8"),
+);
+if (recipes.items.length !== config.recipeCount)
+  throw new Error("Incomplete recipe catalog.");
 const items = catalog.items.map((item) => {
   const bytes = readFileSync(resolve(root, item.webp.path));
   const hash = createHash("sha256").update(bytes).digest("hex");
@@ -30,8 +36,7 @@ const schema = {
   "@context": "https://schema.org",
   "@type": "Dataset",
   name: config.name,
-  description:
-    "520 AI-generated ingredient illustrations with transparent backgrounds, available as optimized WebP files and original PNGs, with category labels and CSV/JSON metadata.",
+  description: `${catalog.count} AI-generated ingredient illustrations with transparent backgrounds, available as optimized WebP files and original PNGs, with category labels and CSV/JSON metadata.`,
   url: config.site,
   version: config.version,
   identifier: config.github,
@@ -72,6 +77,10 @@ const replacements = {
   SITE: config.site,
   GITHUB: config.github,
   VERSION: config.version,
+  INGREDIENT_COUNT: String(catalog.count),
+  GROUP_COUNT: String(catalog.groups.length),
+  RECIPE_COUNT: String(recipes.count),
+  RECIPE_DOWNLOAD: `${config.releaseBase}/${config.recipeArchive}`,
   WEBP_DOWNLOAD: `${config.releaseBase}/${config.webpArchive}`,
   PNG_DOWNLOAD: `${config.releaseBase}/${config.pngArchive}`,
   LICENSE_NAME: config.licenseName,
@@ -86,7 +95,7 @@ for (const [key, value] of Object.entries(replacements))
 if (/\{\{[A-Z_]+\}\}/.test(html))
   throw new Error("Unresolved page template token.");
 writeFileSync(resolve(dist, "index.html"), html);
-for (const file of ["styles.css", "app.js"])
+for (const file of ["styles.css", "app.js", "recipes.js", "recipes.css"])
   copyFileSync(resolve(root, "site", file), resolve(dist, file));
 if (existsSync(resolve(root, "site/launch")))
   cpSync(resolve(root, "site/launch"), resolve(dist, "launch"), {
@@ -94,12 +103,23 @@ if (existsSync(resolve(root, "site/launch")))
   });
 writeFileSync(resolve(dist, "ingredients.json"), JSON.stringify(items));
 mkdirSync(resolve(dist, "metadata"), { recursive: true });
-for (const file of ["ingredients.json", "ingredients.csv", "prompts.json"])
+for (const file of [
+  "ingredients.json",
+  "ingredients.csv",
+  "prompts.json",
+  "recipes.json",
+  "ingredient-mapping.json",
+])
   copyFileSync(
     resolve(root, "metadata", file),
     resolve(dist, "metadata", file),
   );
-for (const file of ["LICENSE", "DATASET_CARD.md", "ATTRIBUTION.md"]) {
+for (const file of [
+  "LICENSE",
+  "DATASET_CARD.md",
+  "ATTRIBUTION.md",
+  "RECIPE_SOURCES.md",
+]) {
   if (existsSync(resolve(root, file)))
     copyFileSync(resolve(root, file), resolve(dist, file));
 }
@@ -150,6 +170,7 @@ writeFileSync(
 console.log(
   JSON.stringify({
     images: items.length,
+    recipes: recipes.count,
     output: dist,
     license: config.license,
   }),

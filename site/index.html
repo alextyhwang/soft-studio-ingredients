@@ -9,14 +9,16 @@
     <meta name="theme-color" content="#f7f7f7" />
     <meta
       name="description"
-      content="520 transparent ingredient illustrations for recipe apps, menus, and meal planners. Browse the collection and download WebP, original PNG, and CSV/JSON metadata."
+      content="{{INGREDIENT_COUNT}} transparent ingredient illustrations for recipe apps, menus, and meal planners. Browse the collection and download WebP, original PNG, and CSV/JSON metadata."
     />
-    <title>Soft Studio — 520 transparent ingredient illustrations</title>
+    <title>
+      Soft Studio — {{INGREDIENT_COUNT}} transparent ingredient illustrations
+    </title>
     <link rel="canonical" href="{{SITE}}/" />
     <meta property="og:type" content="website" />
     <meta
       property="og:title"
-      content="Soft Studio — 520 ingredients for your next idea"
+      content="Soft Studio — {{INGREDIENT_COUNT}} ingredients for your next idea"
     />
     <meta
       property="og:description"
@@ -28,7 +30,7 @@
     <meta name="twitter:title" content="Soft Studio Ingredients" />
     <meta
       name="twitter:description"
-      content="520 transparent ingredient illustrations. PNG + WebP + metadata."
+      content="{{INGREDIENT_COUNT}} transparent ingredient illustrations. PNG + WebP + metadata."
     />
     <meta name="twitter:image" content="{{OG_IMAGE}}" />
     <link
@@ -36,7 +38,9 @@
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='20' fill='white'/%3E%3Cg fill='%23181818'%3E%3Ccircle cx='15' cy='15' r='2.5'/%3E%3Ccircle cx='25' cy='15' r='2.5'/%3E%3Ccircle cx='15' cy='25' r='2.5'/%3E%3Ccircle cx='25' cy='25' r='2.5'/%3E%3C/g%3E%3C/svg%3E"
     />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="recipes.css" />
     <script src="app.js" type="module"></script>
+    <script src="recipes.js" type="module"></script>
     <script type="application/ld+json">
       {{DATASET_SCHEMA}}
     </script>
@@ -50,7 +54,7 @@
         ><span>Soft Studio</span></a
       >
       <nav class="header-links" aria-label="Main navigation">
-        <a href="#downloads">Downloads</a
+        <a href="#recipes">Recipes</a><a href="#downloads">Downloads</a
         ><a class="github-link" href="{{GITHUB}}"
           >GitHub <span aria-hidden="true">↗</span></a
         >
@@ -64,7 +68,7 @@
             Good ingredients.<br /><span>For your next idea.</span>
           </h1>
           <p class="intro">
-            520 transparent food illustrations for apps,<br
+            {{INGREDIENT_COUNT}} transparent food illustrations for apps,<br
               class="desktop-break"
             />
             menus, and meal planners. A little of everything.
@@ -100,7 +104,7 @@
           <a
             class="art-bubble art-browse"
             href="#collection"
-            aria-label="Browse all 520 ingredients"
+            aria-label="Browse all {{INGREDIENT_COUNT}} ingredients"
             ><svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 5v14M5 12h14" /></svg
           ></a>
@@ -124,9 +128,9 @@
         </div>
       </section>
       <div class="facts" aria-label="Dataset contents">
-        <span><strong>520</strong> illustrations</span
-        ><span><strong>20</strong> categories</span
-        ><span><strong>Transparent</strong> backgrounds</span
+        <span><strong>{{INGREDIENT_COUNT}}</strong> illustrations</span
+        ><span><strong>{{GROUP_COUNT}}</strong> categories</span
+        ><span><strong>{{RECIPE_COUNT}}</strong> recipes</span
         ><span><strong>WebP</strong> + PNG</span>
       </div>
       <section id="collection" aria-labelledby="collection-title">
@@ -193,6 +197,68 @@
           </p></noscript
         >
       </section>
+
+      <section id="recipes" class="recipes" aria-labelledby="recipes-title">
+        <div class="collection-heading">
+          <div>
+            <p class="eyebrow">The recipe collection</p>
+            <h2 id="recipes-title">
+              Put your pantry<br /><span>to good use.</span>
+            </h2>
+          </div>
+          <p>
+            {{RECIPE_COUNT}} recipes, every ingredient illustrated.<br /><a
+              href="{{RECIPE_DOWNLOAD}}"
+              >Download the cookbook ↗</a
+            >
+          </p>
+        </div>
+        <div class="toolbar recipe-toolbar">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="10.5" cy="10.5" r="6.5" />
+              <path d="m16 16 4.5 4.5" />
+            </svg>
+            <label class="sr-only" for="recipe-search"
+              >Find a recipe or ingredient</label
+            ><input
+              id="recipe-search"
+              type="search"
+              placeholder="Find a recipe or ingredient…"
+              enterkeyhint="search"
+              autocomplete="off"
+            />
+          </div>
+          <label class="sr-only" for="recipe-tag">Recipe cuisine or tag</label
+          ><select id="recipe-tag">
+            <option value="">All cuisines and tags</option>
+          </select>
+        </div>
+        <div class="collection-meta">
+          <p id="recipe-count" role="status" aria-live="polite">
+            Browse {{RECIPE_COUNT}} recipes
+          </p>
+          <span>Select a recipe to see ingredients and steps</span>
+        </div>
+        <div id="recipe-gallery" class="recipe-grid"></div>
+        <button type="button" id="recipe-more" class="recipe-more" hidden>
+          Show more recipes
+        </button>
+        <div id="recipe-empty" class="empty" hidden>
+          <h3>No recipes found.</h3>
+          <p>Try another ingredient or cuisine.</p>
+          <button type="button" id="recipe-reset">Clear filters</button>
+        </div>
+        <div id="recipe-error" class="empty" hidden>
+          <h3>The recipes couldn’t load.</h3>
+          <p>Check your connection and try again.</p>
+          <button type="button" id="recipe-retry">Try again</button>
+        </div>
+        <p class="recipe-credit">
+          Recipe text retains its original source rights.
+          <a href="RECIPE_SOURCES.md">Sources and attribution ↗</a>
+        </p>
+      </section>
       <section
         id="downloads"
         class="downloads"
@@ -203,12 +269,25 @@
           A format for every project.<br /><span>Ready when you are.</span>
         </h2>
         <div class="download-grid">
+          <a class="download-card" href="{{RECIPE_DOWNLOAD}}"
+            ><span class="file-kind">RECIPES</span>
+            <h3>The illustrated cookbook</h3>
+            <p>
+              {{RECIPE_COUNT}} recipes, source measures, cooking steps and
+              ingredient mappings. Includes all {{INGREDIENT_COUNT}} WebP
+              illustrations.
+            </p>
+            <span class="download-label"
+              >Download recipes + artwork
+              <span aria-hidden="true">↗</span></span
+            ></a
+          >
           <a class="download-card" href="{{WEBP_DOWNLOAD}}"
             ><span class="file-kind">WEBP</span>
             <h3>Ready for your app</h3>
             <p>
-              520 optimized illustrations, up to 320 px. Transparent
-              backgrounds, small downloads.
+              {{INGREDIENT_COUNT}} optimized illustrations, up to 320 px.
+              Transparent backgrounds, small downloads.
             </p>
             <span class="download-label"
               >Download WebP pack <span aria-hidden="true">↗</span></span
@@ -218,8 +297,8 @@
             ><span class="file-kind">PNG</span>
             <h3>Room to go bigger</h3>
             <p>
-              All 520 original PNGs, at their generated resolution. About 777
-              MB.
+              All {{INGREDIENT_COUNT}} original PNGs, at their generated
+              resolution. About 777 MB.
             </p>
             <span class="download-label"
               >Download original PNGs <span aria-hidden="true">↗</span></span
@@ -327,6 +406,39 @@
             >Save image <span aria-hidden="true">↗</span></a
           >
         </div>
+      </div>
+    </dialog>
+
+    <dialog
+      id="recipe-detail"
+      class="recipe-dialog"
+      aria-labelledby="recipe-detail-title"
+    >
+      <button
+        type="button"
+        id="recipe-close"
+        class="close icon-button"
+        aria-label="Close recipe"
+      >
+        ×
+      </button>
+      <div class="recipe-detail-body">
+        <p class="eyebrow" id="recipe-detail-meta"></p>
+        <h2 id="recipe-detail-title"></h2>
+        <p id="recipe-description"></p>
+        <h3>Ingredients</h3>
+        <ul id="recipe-ingredients"></ul>
+        <h3>Steps</h3>
+        <ol id="recipe-steps"></ol>
+        <p id="recipe-source-note" class="recipe-credit"></p>
+        <a
+          id="recipe-source"
+          class="recipe-source"
+          target="_blank"
+          rel="noopener noreferrer"
+          hidden
+          >Original recipe ↗</a
+        >
       </div>
     </dialog>
   </body>
